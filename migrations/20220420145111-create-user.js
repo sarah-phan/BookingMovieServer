@@ -8,23 +8,33 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      username: {
+      firstName: {
+        type: Sequelize.STRING
+      },
+      lastName: {
+        type: Sequelize.STRING
+      },
+      dayOfBirth: {
+        type: Sequelize.DATE
+      },
+      email: {
         type: Sequelize.STRING
       },
       password: {
         type: Sequelize.STRING
       },
-      fullName: {
-        type: Sequelize.STRING
-      },
-      email: {
+      passwordd: {
         type: Sequelize.STRING
       },
       phoneNumber: {
         type: Sequelize.STRING
       },
       roleId: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: {
+          model: 'Roles',
+          key: 'id',
+        },
       },
       createdAt: {
         allowNull: false,
@@ -34,6 +44,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
+    }, {
+      paranoid: true,
+      deletedAt: 'destroyTime'
     });
   },
   async down(queryInterface, Sequelize) {
