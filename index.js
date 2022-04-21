@@ -1,7 +1,7 @@
 'use strict';
 const express = require("express");
 const routeRouter = require('./src/routers')
-const {sequelize} = require('./models');
+const { sequelize } = require("./models")
 
 const app = express()
 app.use(express.json())

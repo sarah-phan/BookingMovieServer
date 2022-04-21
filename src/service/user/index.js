@@ -1,8 +1,8 @@
 'use strict'
 
-const {User} = require("../../../models")
+const { User } = require("../../../models")
 
-const getAllUser = async() => {
+const getAllUser = async () => {
     try {
         const users = await User.findAll()
         return users;
@@ -10,7 +10,7 @@ const getAllUser = async() => {
         return null
     }
 }
-const getUserById = async(id) => {
+const getUserById = async (id) => {
     try {
         const user = await User.findOne({
             where: {
