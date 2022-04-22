@@ -21,10 +21,10 @@ module.exports = {
         type: Sequelize.DATE
       },
       gender: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.STRING
       },
       phone: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       address: {
         type: Sequelize.STRING
@@ -32,8 +32,8 @@ module.exports = {
       roleId: {
         type: Sequelize.STRING,
         references:{
-          model:"UserRoles",
-          key:"roleId"
+          model: "UserRoles",
+          key: "id"
         }
       },
       createdAt: {

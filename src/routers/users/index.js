@@ -1,9 +1,16 @@
 'use strict'
 
 const express = require('express');
-const { getAllUser, getUserById } = require('../../service/user');
+const { getAllUser, getUserById, getAllRoles } = require('../../service/user');
 const userRouter = express.Router();
 
+userRouter.get('/get-all-role', async (req, res) => {
+    const role = await getAllRoles()
+    if (!role){
+        return res.status(500).send("Cannot get role");
+    }
+    res.status(200).send(role);
+})
 userRouter.get('/get-all-user', async (req, res) => {
     const users = await getAllUser()
     if (users === null) {

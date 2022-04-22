@@ -1,7 +1,17 @@
 'use strict'
 
 const { User } = require("../../../models")
+const { UserRole } = require("../../../models")
 
+const getAllRoles = async () => {
+    try {
+        const role = await UserRole.findAll()
+        return role;
+    } catch (error) {
+        console.log(error)
+        return null;
+    }
+}
 const getAllUser = async () => {
     try {
         const users = await User.findAll()
@@ -24,6 +34,7 @@ const getUserById = async (id) => {
 }
 
 module.exports = {
+    getAllRoles,
     getAllUser,
     getUserById
 }
