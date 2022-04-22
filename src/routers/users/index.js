@@ -1,7 +1,14 @@
 'use strict'
 
 const express = require('express');
-const { getAllUser, getUserById, getAllRoles, getAllUserPagination } = require('../../service/user');
+const { scriptPassword } = require('../../service/auth');
+const { 
+    getAllUser, 
+    getUserById, 
+    getAllRoles, 
+    getAllUserPagination, 
+    createUser
+} = require('../../service/user');
 const userRouter = express.Router();
 
 userRouter.get('/get-all-role', async (req, res) => {
@@ -34,4 +41,32 @@ userRouter.get('/get-all-user-pagination', async(req, res) => {
     }
     res.status(200).send(userPagination)
 })
+
+userRouter.post("/sign-up", async(req, res) => {
+    const {
+        username, 
+        password, 
+        fullName, 
+        birthday, 
+        gender, 
+        phone, 
+        address, 
+    } = req.body;
+    const passwordHashed = scriptPassword(password);
+    const data = await createUser({
+        username, 
+        password: passwordHashed, 
+        fullName, 
+        birthday, 
+        gender, 
+        phone, 
+        address,
+        roleId: 'AU'
+    });
+    if(!data){
+        return res.status(500).send("Cannot create user")
+    }
+    res.status(201).send(data)
+})
+
 module.exports = userRouter
