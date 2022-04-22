@@ -1,19 +1,20 @@
 'use strict'
 
 const express = require('express');
-const { scriptPassword } = require('../../service/auth');
-const { 
-    getAllUser, 
-    getUserById, 
-    getAllRoles, 
-    getAllUserPagination, 
-    createUser
+const { scriptPassword, comparedPassword, genToken } = require('../../service/auth');
+const {
+    getAllUser,
+    getUserById,
+    getAllRoles,
+    getAllUserPagination,
+    createUser,
+    getUserByUsername
 } = require('../../service/user');
 const userRouter = express.Router();
 
 userRouter.get('/get-all-role', async (req, res) => {
     const role = await getAllRoles()
-    if (!role){
+    if (!role) {
         return res.status(500).send("Cannot get role");
     }
     res.status(200).send(role);
@@ -28,45 +29,61 @@ userRouter.get('/get-all-user', async (req, res) => {
 userRouter.get('/user-detail/:id', async (req, res) => {
     const { id } = req.params;
     const user = await getUserById(id)
-    if (!user){
+    if (!user) {
         return res.status(500).send(`Cannot get detail of user ${id}`)
     }
     res.status(200).send(user)
 })
-userRouter.get('/get-all-user-pagination', async(req, res) => {
-    const {skip, limit}  = req.query;
+userRouter.get('/get-all-user-pagination', async (req, res) => {
+    const { skip, limit } = req.query;
     const userPagination = await getAllUserPagination(skip, limit)
-    if(!userPagination){
+    if (!userPagination) {
         return res.status(500).send("Cannot send data user pagination")
     }
     res.status(200).send(userPagination)
 })
 
-userRouter.post("/sign-up", async(req, res) => {
+userRouter.post("/sign-up", async (req, res) => {
     const {
-        username, 
-        password, 
-        fullName, 
-        birthday, 
-        gender, 
-        phone, 
-        address, 
+        username,
+        password,
+        fullName,
+        birthday,
+        gender,
+        phone,
+        address,
     } = req.body;
     const passwordHashed = scriptPassword(password);
     const data = await createUser({
-        username, 
-        password: passwordHashed, 
-        fullName, 
-        birthday, 
-        gender, 
-        phone, 
+        username,
+        password: passwordHashed,
+        fullName,
+        birthday,
+        gender,
+        phone,
         address,
         roleId: 'AU'
     });
-    if(!data){
+    if (!data) {
         return res.status(500).send("Cannot create user")
     }
     res.status(201).send(data)
+})
+userRouter.post('/sign-in', async (req, res) => {
+    const { username, password } = req.body;
+    const user = await getUserByUsername(username)
+    if (!user) {
+        return res.status(401).send("Username is not existed")
+    }
+    const isSuccess = comparedPassword(password, user.password);
+    // console.log({ isSuccess })
+    if (!isSuccess) {
+        return res.status(401).send("Password is not match")
+    }
+    const token = genToken({
+        id: user.id
+    })
+    res.status(200).send({ user, token })
 })
 
 module.exports = userRouter

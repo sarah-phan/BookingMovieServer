@@ -60,10 +60,24 @@ const createUser = async(data) => {
         return null
     }
 }
+const getUserByUsername = async(username) => {
+    try {
+        const data = await User.findOne({
+            where: {
+                username,
+            }
+        })
+        return data
+    } catch (error) {
+        console.log(error)
+        return null;
+    }
+}
 module.exports = {
     getAllRoles,
     getAllUser,
     getUserById,
     getAllUserPagination,
-    createUser
+    createUser,
+    getUserByUsername
 }
