@@ -1,7 +1,7 @@
 'use strict'
 
 const express = require('express');
-const { getAllUser, getUserById, getAllRoles } = require('../../service/user');
+const { getAllUser, getUserById, getAllRoles, getAllUserPagination } = require('../../service/user');
 const userRouter = express.Router();
 
 userRouter.get('/get-all-role', async (req, res) => {
@@ -25,5 +25,13 @@ userRouter.get('/user-detail/:id', async (req, res) => {
         return res.status(500).send(`Cannot get detail of user ${id}`)
     }
     res.status(200).send(user)
+})
+userRouter.get('/get-all-user-pagination', async(req, res) => {
+    const {skip, limit}  = req.query;
+    const userPagination = await getAllUserPagination(skip, limit)
+    if(!userPagination){
+        return res.status(500).send("Cannot send data user pagination")
+    }
+    res.status(200).send(userPagination)
 })
 module.exports = userRouter

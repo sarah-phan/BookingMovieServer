@@ -32,9 +32,28 @@ const getUserById = async (id) => {
         return null;
     }
 }
+const getPagination = (skipFromUser, limitFromUser) => {
+    const limit = limitFromUser ? +limitFromUser : 3
+    const offset = skipFromUser ? skipFromUser*limit : 0
+    return {offset, limit}
+}
+const getAllUserPagination = async(skipFromUser, limitFromUser) => {
+    try {
+        const {offset, limit} = getPagination(skipFromUser, limitFromUser);
+        const userPagination = await User.findAll({
+            limit,
+            offset,
+        })
+        return userPagination
+    } catch (error) {
+        console.log(error)
+        return null
+    }
+}
 
 module.exports = {
     getAllRoles,
     getAllUser,
-    getUserById
+    getUserById,
+    getAllUserPagination
 }
