@@ -8,7 +8,9 @@ const {
     getAllRoles,
     getAllUserPagination,
     createUser,
-    getUserByUsername
+    getUserByUsername,
+    updateUserById,
+    validation
 } = require('../../service/user');
 const userRouter = express.Router();
 
@@ -53,7 +55,14 @@ userRouter.post("/sign-up", async (req, res) => {
         phone,
         address,
     } = req.body;
+
+    const error = validation(username, password, fullName, birthday, gender, phone, address);
+    if(error){
+        return res.status(406).send(error)
+    }
+
     const passwordHashed = scriptPassword(password);
+
     const data = await createUser({
         username,
         password: passwordHashed,
@@ -76,7 +85,6 @@ userRouter.post('/sign-in', async (req, res) => {
         return res.status(401).send("Username is not existed")
     }
     const isSuccess = comparedPassword(password, user.password);
-    // console.log({ isSuccess })
     if (!isSuccess) {
         return res.status(401).send("Password is not match")
     }
@@ -85,5 +93,42 @@ userRouter.post('/sign-in', async (req, res) => {
     })
     res.status(200).send({ user, token })
 })
+userRouter.put('/update-user/:id', async(req, res) => {
+    const{
+        username,
+        password,
+        fullName,
+        birthday,
+        gender,
+        phone,
+        address,
+    } = req.body;
+    const {id} = req.params
+
+    const error = validation(username, password, fullName, birthday, gender, phone, address);
+    if(error){
+        return res.status(406).send(error)
+    }
+
+    const isExistUser = await getUserById(id);
+    if(!isExistUser){
+        return res.status(404).send("Not exist user account")
+    }
+    const user = await updateUserById(id, {
+        username,
+        password,
+        fullName,
+        birthday,
+        gender,
+        phone,
+        address
+    });
+    if (!user){
+        return res.status(500).send("Cannot update user information");
+    }
+    res.status(200).send("Update user successfully");
+})
+
+
 
 module.exports = userRouter

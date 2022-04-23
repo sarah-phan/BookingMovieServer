@@ -73,11 +73,51 @@ const getUserByUsername = async(username) => {
         return null;
     }
 }
+const updateUserById = async(id, data) => {
+    try {
+        const user = await User.update(data, {
+            where: {
+                id,
+            }
+        })
+        return user;
+    } catch (error) {
+        console.log(error)
+        return null;
+    }
+}
+const validation = (username, password, fullName, birthday, gender, phone, address) => {
+    var error;
+    if (!username || !username.trim()){
+        return error = "Username is required";
+    }
+    if (!password || !password.trim()){
+        return error = "Password is required";
+    }
+    if (!fullName || !fullName.trim()){
+        return error = "Full name is required";
+    }
+    if (!birthday || !birthday.trim()){
+        return error = "Birthday is required";
+    }
+    if (!gender || !gender.trim()){
+        return error = "Gender is required";
+    }
+    if (!phone || !phone.trim()){
+        return error = "Phone is required";
+    }
+    if (!address || !address.trim()){
+        return error = "Address is required"
+    }
+    return null
+}
 module.exports = {
     getAllRoles,
     getAllUser,
     getUserById,
     getAllUserPagination,
     createUser,
-    getUserByUsername
+    getUserByUsername,
+    updateUserById,
+    validation
 }
