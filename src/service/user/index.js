@@ -82,7 +82,6 @@ const updateUserById = async(id, data) => {
         })
         return user;
     } catch (error) {
-        console.log(error)
         return null;
     }
 }
@@ -111,6 +110,19 @@ const validation = (username, password, fullName, birthday, gender, phone, addre
     }
     return null
 }
+const deleteUser = async(id) => {
+    try {
+        const user = await User.destroy({
+            where: {
+                id,
+            }
+        })
+        return user
+    } catch (error) {
+        console.log(error)
+        return null
+    }
+}
 module.exports = {
     getAllRoles,
     getAllUser,
@@ -119,5 +131,6 @@ module.exports = {
     createUser,
     getUserByUsername,
     updateUserById,
-    validation
+    validation,
+    deleteUser
 }

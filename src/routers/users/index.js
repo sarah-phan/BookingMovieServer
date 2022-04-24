@@ -1,6 +1,7 @@
 'use strict'
 
 const express = require('express');
+const { authenticate, checkRole } = require('../../../middleware/auth');
 const { scriptPassword, comparedPassword, genToken } = require('../../service/auth');
 const {
     getAllUser,
@@ -10,25 +11,26 @@ const {
     createUser,
     getUserByUsername,
     updateUserById,
-    validation
+    validation,
+    deleteUser
 } = require('../../service/user');
 const userRouter = express.Router();
 
-userRouter.get('/get-all-role', async (req, res) => {
+userRouter.get('/get-all-role', [authenticate], async (req, res) => {
     const role = await getAllRoles()
     if (!role) {
         return res.status(500).send("Cannot get role");
     }
     res.status(200).send(role);
 })
-userRouter.get('/get-all-user', async (req, res) => {
+userRouter.get('/get-all-user', [authenticate], async (req, res) => {
     const users = await getAllUser()
     if (users === null) {
         return res.status(500).send("Cannot get user list");
     }
     res.status(200).send(users)
 })
-userRouter.get('/user-detail/:id', async (req, res) => {
+userRouter.get('/user-detail/:id', [authenticate], async (req, res) => {
     const { id } = req.params;
     const user = await getUserById(id)
     if (!user) {
@@ -36,7 +38,7 @@ userRouter.get('/user-detail/:id', async (req, res) => {
     }
     res.status(200).send(user)
 })
-userRouter.get('/get-all-user-pagination', async (req, res) => {
+userRouter.get('/get-all-user-pagination', [authenticate], async (req, res) => {
     const { skip, limit } = req.query;
     const userPagination = await getAllUserPagination(skip, limit)
     if (!userPagination) {
@@ -93,7 +95,8 @@ userRouter.post('/sign-in', async (req, res) => {
     })
     res.status(200).send({ user, token })
 })
-userRouter.put('/update-user/:id', async(req, res) => {
+userRouter.put('/update-user/:id', [authenticate], async(req, res) => {
+    const message = "Updated successfully";
     const{
         username,
         password,
@@ -105,30 +108,39 @@ userRouter.put('/update-user/:id', async(req, res) => {
     } = req.body;
     const {id} = req.params
 
-    const error = validation(username, password, fullName, birthday, gender, phone, address);
-    if(error){
-        return res.status(406).send(error)
-    }
-
     const isExistUser = await getUserById(id);
     if(!isExistUser){
         return res.status(404).send("Not exist user account")
     }
-    const user = await updateUserById(id, {
+    const data = {
         username,
         password,
         fullName,
         birthday,
         gender,
         phone,
-        address
-    });
+        address,
+    };
+    const user = await updateUserById(id, data);
     if (!user){
         return res.status(500).send("Cannot update user information");
     }
-    res.status(200).send("Update user successfully");
+    const fetchUser = await getUserById(id);
+    res.status(200).send({message, fetchUser});
 })
 
-
+userRouter.delete('/delete-user/:id', [authenticate, checkRole('AA')], async(req,res) => {
+    const message = "Delete successfully"
+    const {id} = req.params
+    const isExistUser = await getUserById(id);
+    if(!isExistUser){
+        return res.status(404).send("Not exist user account")
+    }
+    const user = await deleteUser(id)
+    if(!user){
+        return res.status(500).send("Cannot delete user")
+    }
+    res.status(200).send({message, isExistUser});
+})
 
 module.exports = userRouter
