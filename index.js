@@ -2,10 +2,12 @@
 const express = require("express");
 const routeRouter = require('./src/routers')
 const { sequelize } = require("./models")
+const path = require('path');
 
 const app = express()
 app.use(express.json())
 app.use('/api', routeRouter)
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 sequelize
     .authenticate()

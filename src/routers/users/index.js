@@ -2,6 +2,8 @@
 
 const express = require('express');
 const { authenticate, checkRole } = require('../../../middleware/auth');
+const { uploadAvatar } = require('../../../middleware/upload');
+const { SYSTEM } = require('../../config');
 const { scriptPassword, comparedPassword, genToken } = require('../../service/auth');
 const {
     getAllUser,
@@ -12,7 +14,8 @@ const {
     getUserByUsername,
     updateUserById,
     validation,
-    deleteUser
+    deleteUser,
+    storageAvatar
 } = require('../../service/user');
 const userRouter = express.Router();
 
@@ -59,7 +62,7 @@ userRouter.post("/sign-up", async (req, res) => {
     } = req.body;
 
     const error = validation(username, password, fullName, birthday, gender, phone, address);
-    if(error){
+    if (error) {
         return res.status(406).send(error)
     }
 
@@ -95,9 +98,9 @@ userRouter.post('/sign-in', async (req, res) => {
     })
     res.status(200).send({ user, token })
 })
-userRouter.put('/update-user/:id', [authenticate], async(req, res) => {
+userRouter.put('/update-user/:id', [authenticate], async (req, res) => {
     const message = "Updated successfully";
-    const{
+    const {
         username,
         password,
         fullName,
@@ -106,10 +109,10 @@ userRouter.put('/update-user/:id', [authenticate], async(req, res) => {
         phone,
         address,
     } = req.body;
-    const {id} = req.params
+    const { id } = req.params
 
     const isExistUser = await getUserById(id);
-    if(!isExistUser){
+    if (!isExistUser) {
         return res.status(404).send("Not exist user account")
     }
     const data = {
@@ -122,25 +125,69 @@ userRouter.put('/update-user/:id', [authenticate], async(req, res) => {
         address,
     };
     const user = await updateUserById(id, data);
-    if (!user){
+    if (!user) {
         return res.status(500).send("Cannot update user information");
     }
     const fetchUser = await getUserById(id);
-    res.status(200).send({message, fetchUser});
+    res.status(200).send({ message, fetchUser });
 })
 
-userRouter.delete('/delete-user/:id', [authenticate, checkRole('AA')], async(req,res) => {
+userRouter.delete('/delete-user/:id', [authenticate, checkRole('AA')], async (req, res) => {
     const message = "Delete successfully"
-    const {id} = req.params
-    const isExistUser = await getUserById(id);
-    if(!isExistUser){
+    const { id } = req.params
+    const user = await getUserById(id);
+    if (!user) {
         return res.status(404).send("Not exist user account")
     }
-    const user = await deleteUser(id)
-    if(!user){
+    const isDelete = await deleteUser(id)
+    if (!isDelete) {
         return res.status(500).send("Cannot delete user")
     }
-    res.status(200).send({message, isExistUser});
+    res.status(200).send({ message, user });
+})
+userRouter.post('/add-admin-account', [authenticate, checkRole('AA')], async (req, res) => {
+    const {
+        username,
+        password,
+        fullName,
+        birthday,
+        gender,
+        phone,
+        address,
+    } = req.body;
+
+    const error = validation(username, password, fullName, birthday, gender, phone, address);
+    if (error) {
+        return res.status(406).send(error)
+    }
+
+    const passwordHashed = scriptPassword(password);
+
+    const data = await createUser({
+        username,
+        password: passwordHashed,
+        fullName,
+        birthday,
+        gender,
+        phone,
+        address,
+        roleId: 'AA'
+    });
+    if (!data) {
+        return res.status(500).send("Cannot create user")
+    }
+    res.status(201).send(data)
 })
 
+userRouter.post('/avatar', [authenticate, uploadAvatar()], async (req, res) => {
+    const user = req.user;
+
+    const file = req.file;
+
+    const url = `${SYSTEM.DOMAIN}/${file.path}`;
+
+    const avatar = await storageAvatar(user.id, url);
+
+    res.status(200).send(avatar);
+});
 module.exports = userRouter
