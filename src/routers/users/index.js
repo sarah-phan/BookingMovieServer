@@ -26,7 +26,7 @@ userRouter.get('/get-all-role', [authenticate], async (req, res) => {
     }
     res.status(200).send(role);
 })
-userRouter.get('/get-all-user', [authenticate], async (req, res) => {
+userRouter.get('/get-all-user', [authenticate, checkRole('AA')], async (req, res) => {
     const users = await getAllUser()
     if (users === null) {
         return res.status(500).send("Cannot get user list");
@@ -41,7 +41,7 @@ userRouter.get('/user-detail/:id', [authenticate], async (req, res) => {
     }
     res.status(200).send(user)
 })
-userRouter.get('/get-all-user-pagination', [authenticate], async (req, res) => {
+userRouter.get('/get-all-user-pagination', [authenticate, checkRole('AA')], async (req, res) => {
     const { skip, limit } = req.query;
     const userPagination = await getAllUserPagination(skip, limit)
     if (!userPagination) {
