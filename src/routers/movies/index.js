@@ -11,7 +11,8 @@ const {
     storageMovieImage,
     getAllMoviePagination,
     getMovieByDate,
-    deleteMovieById
+    deleteMovieById,
+    updateMovie
 } = require("../../service/movie");
 const movieRouter = express.Router()
 
@@ -117,6 +118,48 @@ movieRouter.delete('/delete-movie-by-ID/:id', [authenticate, checkRole('AA')], a
             "movie": isExisted
 
         },
+    ])
+})
+
+movieRouter.put('/update-movie/:id', [authenticate, checkRole('AA')], async (req, res) => {
+    const { id } = req.params
+    const {
+        name,
+        alias,
+        description,
+        trailer,
+        startShowing,
+        rating,
+        hot,
+        isShown,
+        comingSoon,
+    } = req.body
+    const isExisted = await getMovieDetail(id)
+    if (!isExisted) {
+        return res.status(404).send(`Cannot find movie id ${id}`)
+    }
+    const data = {
+        name,
+        alias,
+        description,
+        trailer,
+        startShowing,
+        rating,
+        hot,
+        isShown,
+        comingSoon,
+    }
+    const updatedResult = await updateMovie(id, data)
+    console.log({updatedResult})
+    if (!updatedResult) {
+        return res.status(500).send('Cannot update movie information')
+    }
+    const movie = await getMovieDetail(id)
+    res.status(200).send([
+        {
+            'message': 'Updated successfully',
+            'Movie': movie
+        }
     ])
 })
 module.exports = movieRouter

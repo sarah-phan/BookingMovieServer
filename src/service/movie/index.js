@@ -142,6 +142,19 @@ const deleteMovieById = async (id) => {
         return null
     }
 }
+
+const updateMovie = async(id, data) => {
+    try {
+        const result = await Movie.update(data, {
+            where: {
+                id,
+            }
+        })
+        return result
+    } catch (error) {
+        return null
+    }
+}
 module.exports = {
     createMovie,
     validation,
@@ -150,5 +163,6 @@ module.exports = {
     getMovieDetail,
     storageMovieImage,
     getMovieByDate,
-    deleteMovieById
+    deleteMovieById,
+    updateMovie
 }
