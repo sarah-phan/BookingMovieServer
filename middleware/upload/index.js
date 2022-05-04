@@ -1,9 +1,9 @@
 const multer = require('multer');
 
-const uploadAvatar = () => {
+const uploadImage = (location) => {
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, './public/images/avatar');
+      cb(null, `./public/images/${location}`);
     },
     filename: (req, file, cb) => {
       cb(null, `${Date.now()}.${file.originalname.split('.').pop()}`);
@@ -24,9 +24,9 @@ const uploadAvatar = () => {
     limits: { fileSize: 10000000 },
   });
 
-  return upload.single('avatar');
+  return upload.single(location);
 };
 
 module.exports = {
-  uploadAvatar,
+  uploadImage,
 };
