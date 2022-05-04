@@ -2,7 +2,7 @@
 
 const express = require('express');
 const { authenticate, checkRole } = require('../../../middleware/auth');
-const { uploadAvatar } = require('../../../middleware/upload');
+const { uploadImage } = require('../../../middleware/upload');
 const { SYSTEM } = require('../../config');
 const { scriptPassword, comparedPassword, genToken } = require('../../service/auth');
 const {
@@ -26,7 +26,7 @@ userRouter.get('/get-all-role', [authenticate], async (req, res) => {
     }
     res.status(200).send(role);
 })
-userRouter.get('/get-all-user', [authenticate, checkRole('AA')], async (req, res) => {
+userRouter.get('/get-all-user', [authenticate], async (req, res) => {
     const users = await getAllUser()
     if (users === null) {
         return res.status(500).send("Cannot get user list");
@@ -135,15 +135,20 @@ userRouter.put('/update-user/:id', [authenticate], async (req, res) => {
 userRouter.delete('/delete-user/:id', [authenticate, checkRole('AA')], async (req, res) => {
     const message = "Delete successfully"
     const { id } = req.params
-    const user = await getUserById(id);
-    if (!user) {
+    const isExisted = await getUserById(id);
+    if (!isExisted) {
         return res.status(404).send("Not exist user account")
     }
     const isDelete = await deleteUser(id)
     if (!isDelete) {
         return res.status(500).send("Cannot delete user")
     }
-    res.status(200).send({ message, user });
+    res.status(200).send([
+        {
+            "message": message,
+            "User": isExisted
+        }
+    ]);
 })
 userRouter.post('/add-admin-account', [authenticate, checkRole('AA')], async (req, res) => {
     const {
@@ -179,7 +184,7 @@ userRouter.post('/add-admin-account', [authenticate, checkRole('AA')], async (re
     res.status(201).send(data)
 })
 
-userRouter.post('/avatar', [authenticate, uploadAvatar()], async (req, res) => {
+userRouter.post('/avatar', [authenticate, uploadImage("avatar")], async (req, res) => {
     const user = req.user;
 
     const file = req.file;
