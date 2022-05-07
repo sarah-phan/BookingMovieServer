@@ -15,9 +15,10 @@ const validation = (id, systemName, alias) => {
     return error
 }
 
-const getAllCinemaSystem = async () => {
+const getAllCinemaSystem = async (idSystem) => {
     try {
-        const cinemaSystem = await CinemaSystem.findAll({
+        const options = {
+            where: {},
             include: {
                 model: CinemaLogo,
                 as: 'Logo',
@@ -26,9 +27,14 @@ const getAllCinemaSystem = async () => {
                     isActive: true
                 }
             }
-        })
+        }
+        if (idSystem !== undefined){
+            options.where.id = idSystem
+        }
+        const cinemaSystem = await CinemaSystem.findAll(options)
         return cinemaSystem
     } catch (error) {
+        console.log(error)
         return null
     }
 }

@@ -8,7 +8,9 @@ const { getAllCinemaSystem, validation, createCinemaSystem, checkCinemaSystemExi
 const systemRouter = express.Router()
 
 systemRouter.get('/get-cinema-system', async(req,res) => {
-    const cinemaSystem = await getAllCinemaSystem()
+    const {idSystem} = req.query
+    console.log(idSystem)
+    const cinemaSystem = await getAllCinemaSystem(idSystem)
     if(!cinemaSystem){
         return res.status(500).send("Cannot send cinema system")
     }
