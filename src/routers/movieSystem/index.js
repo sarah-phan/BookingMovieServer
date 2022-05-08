@@ -36,7 +36,7 @@ systemRouter.post('/create-cinema-system', [authenticate, checkRole('AA')], asyn
     if(!system){
         return res.status(500).send('Cannot create cinema system')
     }
-    res.status(200).send(system)
+    res.status(201).send(system)
 })
 
 systemRouter.delete('/delete-cinema-system/:id', [authenticate, checkRole('AA')], async(req, res) => {

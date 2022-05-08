@@ -26,7 +26,7 @@ userRouter.get('/get-all-role', [authenticate], async (req, res) => {
     }
     res.status(200).send(role);
 })
-userRouter.get('/get-all-user', [authenticate], async (req, res) => {
+userRouter.get('/get-all-user', async (req, res) => {
     const users = await getAllUser()
     if (users === null) {
         return res.status(500).send("Cannot get user list");
