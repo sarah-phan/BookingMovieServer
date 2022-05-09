@@ -4,10 +4,21 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Movie extends Model {
-    static associate({MovieImages}) {
+    static associate({
+      MovieImages, 
+      ShowtimeSchedule, 
+      CinemaSystem,
+      Movie_Cinema
+    }) {
       this.hasMany(MovieImages, {
         foreignKey: "movieId",
         as: "Image"
+      })
+      this.hasMany(ShowtimeSchedule, {
+        foreignKey: 'movieId',
+      })
+      this.belongsToMany(CinemaSystem, {
+        through: Movie_Cinema
       })
     }
   }

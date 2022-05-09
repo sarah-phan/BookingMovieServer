@@ -4,7 +4,7 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class CinemaLogo extends Model {
-    static associate({CinemaSystem}) {
+    static associate({ CinemaSystem }) {
       this.belongsTo(CinemaSystem, {
         foreignKey: 'systemId'
       })
@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   CinemaLogo.init({
     url: DataTypes.STRING,
-    isActive: DataTypes.STRING,
+    isActive: DataTypes.BOOLEAN,
     systemId: DataTypes.STRING
   }, {
     sequelize,

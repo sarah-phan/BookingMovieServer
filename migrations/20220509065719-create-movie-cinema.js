@@ -1,29 +1,23 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('Cinemas', {
-      id: {
-        allowNull: false,
+    await queryInterface.createTable('Movie_Cinemas', {
+      movieId: {
+        type: Sequelize.INTEGER,
         autoIncrement: false,
         primaryKey: true,
-        type: Sequelize.STRING
-      },
-      cinemaName: {
-        type: Sequelize.STRING,
         allowNull: false,
-      },
-      address: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      alias: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        references: {
+          model: 'Movies',
+          id: 'id'
+        }
       },
       systemId: {
         type: Sequelize.STRING,
+        primaryKey: true,
+        autoIncrement: false,
         allowNull: false,
-        references:{
+        references: {
           model: 'CinemaSystems',
           key: 'id'
         }
@@ -39,6 +33,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('Cinemas');
+    await queryInterface.dropTable('Movie_Cinemas');
   }
 };
