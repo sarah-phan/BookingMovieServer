@@ -5,7 +5,8 @@ const {
     createCinema,
     getCinemaBySystem,
     checkCinemaExisted,
-    createListRoom
+    createListRoom,
+    getRoomByCinema
 } = require('../../service/cinema')
 const { checkCinemaSystemExist } = require('../../service/movieSystem')
 const cinemaRouter = express.Router()
@@ -51,6 +52,20 @@ cinemaRouter.post('/create-room/:idCinema', [authenticate, checkRole('AA')], asy
         return res.status(500).send("Cannot create room")
     }
     res.status(201).send(room)
+})
+
+cinemaRouter.get('/get-room-by-cinema/:idCinema', async(req,res) => {
+    const {idCinema} = req.params
+
+    const checkCinemaId = await checkCinemaExisted(idCinema)
+    if (!checkCinemaId) {
+        return res.status(404).send(`Cannot find cinema system id ${idCinema}`)
+    }
+    const room = await getRoomByCinema(idCinema)
+    if(!room){
+        return res.status(500).send("Cannot get room list")
+    }
+    res.status(200).send(room)
 })
 
 module.exports = cinemaRouter
