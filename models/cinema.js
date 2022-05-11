@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   class Cinema extends Model {
     static associate({ 
       CinemaSystem, 
-      CinemaRoom 
+      CinemaRoom,
     }) {
       this.belongsTo(CinemaSystem, {
         foreignKey: 'systemId'

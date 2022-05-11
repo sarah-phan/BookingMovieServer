@@ -4,7 +4,11 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class ShowtimeSchedule extends Model {
-    static associate({Movie, CinemaRoom}) {
+    static associate({
+      Movie, 
+      CinemaRoom, 
+      Ticket
+    }) {
       this.belongsTo(Movie, {
         foreignKey: 'movieId',
         as: 'movie'
@@ -12,6 +16,9 @@ module.exports = (sequelize, DataTypes) => {
       this.belongsTo(CinemaRoom, {
         foreignKey: 'roomId',
         as: 'room'
+      })
+      this.hasOne(Ticket, {
+        foreignKey: 'showtimeId'
       })
     }
   }

@@ -6,7 +6,9 @@ module.exports = (sequelize, DataTypes) => {
   class CinemaRoom extends Model {
     static associate({
       Cinema, 
-      ShowtimeSchedule
+      ShowtimeSchedule,
+      ListSeat,
+      Ticket
     }) {
       this.belongsTo(Cinema, {
         foreignKey: 'cinemaId',
@@ -14,6 +16,13 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(ShowtimeSchedule, {
         foreignKey: 'roomId',
         as: 'showtimes'
+      })
+      this.hasMany(ListSeat, {
+        foreignKey: 'roomId',
+        as: 'seats'
+      })
+      this.hasOne(Ticket, {
+        foreignKey: 'cinemaRoomId'
       })
     }
   }

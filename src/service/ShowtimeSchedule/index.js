@@ -48,20 +48,25 @@ const getShowtimeBySystem = async (id) => {
             where: {
                 id,
             },
+            attributes: ['id', 'systemName', 'alias'],
             include: {
                 model: Cinema,
                 as: 'cinemas',
+                attributes: ['id', 'cinemaName', 'address', 'alias', 'systemId'],
                 include: {
                     model: CinemaRoom,
                     as: 'rooms',
                     required: true,
+                    attributes: ['id', 'roomName', 'cinemaId'],
                     include: {
                         model: ShowtimeSchedule,
                         as: 'showtimes',
                         required: true,
+                        attributes: ['id', 'timeshow', 'price', 'duration', 'roomId', 'movieId'],
                         include: {
                             model: Movie,
-                            as: 'movie'
+                            as: 'movie',
+                            attributes: ['id', 'name', 'alias', 'description', 'trailer', 'startShowing', 'rating', 'hot', 'isShown', 'comingSoon']
                         }
                     }
                 }
@@ -74,8 +79,23 @@ const getShowtimeBySystem = async (id) => {
         return null
     }
 }
+
+const checkShowtimeExisted = async(id) => {
+    try {
+        const showtime = await ShowtimeSchedule.findOne({
+            where: {
+                id,
+            }
+        })
+        return showtime
+    } catch (error) {
+        console.log(error)
+        return null
+    }
+}
 module.exports = {
     createShowtime,
     getShowtimeByMovie,
-    getShowtimeBySystem
+    getShowtimeBySystem,
+    checkShowtimeExisted
 }

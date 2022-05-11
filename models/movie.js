@@ -8,7 +8,8 @@ module.exports = (sequelize, DataTypes) => {
       MovieImages, 
       ShowtimeSchedule, 
       CinemaSystem,
-      Movie_Cinema
+      Movie_Cinema,
+      Ticket
     }) {
       this.hasMany(MovieImages, {
         foreignKey: "movieId",
@@ -19,6 +20,9 @@ module.exports = (sequelize, DataTypes) => {
       })
       this.belongsToMany(CinemaSystem, {
         through: Movie_Cinema
+      })
+      this.hasOne(Ticket, {
+        foreignKey: 'movieId'
       })
     }
   }
