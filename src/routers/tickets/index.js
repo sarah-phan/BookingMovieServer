@@ -2,7 +2,7 @@
 const express = require('express')
 const { authenticate } = require('../../../middleware/auth')
 const { checkShowtimeExisted } = require('../../service/ShowtimeSchedule')
-const { getTicketList, getTicketByUser, createTicket } = require('../../service/tickets')
+const { getTicketList, getTicketByUser, createTicket, listSeatByShowtime } = require('../../service/tickets')
 const { getUserById } = require('../../service/user')
 const ticketRouter = express.Router()
 
@@ -46,5 +46,18 @@ ticketRouter.post('/create-ticket', [authenticate], async(req,res) => {
         return res.status(500).send("Cannot create ticket")
     }
     res.status(201).send(ticket)
+})
+
+ticketRouter.get('/get-seats/:idShowtime', async(req,res) => {
+    const {idShowtime} = req.params;
+    const isShowtimeExisted = await checkShowtimeExisted(idShowtime)
+    if(!isShowtimeExisted){
+        return res.status(500).send("Cannot get ticket list")
+    }
+    const seats = await listSeatByShowtime(idShowtime)
+    if(!seats){
+        return res.status(500).send("Cannot get seat list")
+    }
+    res.status(200).send(seats)
 })
 module.exports = ticketRouter

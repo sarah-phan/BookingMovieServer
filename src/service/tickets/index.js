@@ -2,6 +2,19 @@
 
 const { Ticket, ShowtimeSchedule, Movie, ListSeat, CinemaRoom, User } = require('../../../models')
 
+const listSeatByShowtime = async(id) => {
+    try {
+        const seats = ListSeat.findAll({
+            where: {
+                showtimeId: id
+            }
+        })
+        return seats
+    } catch (error) {
+        return null
+    }
+}
+
 const getTicketList = async (id) => {
     try {
         const ticketList = await Ticket.findAll({
@@ -28,6 +41,9 @@ const getTicketList = async (id) => {
                         model: ListSeat,
                         as: 'seats',
                         attributes: ['id', 'seatName', 'seatType', 'orderNumber', 'price', 'isBooked'],
+                        where: {
+                            showtimeId: id
+                        },
                         include: {
                             model: User,
                             as: 'account',
@@ -102,5 +118,6 @@ const createTicket = async (data) => {
 module.exports = {
     getTicketList,
     getTicketByUser,
-    createTicket
+    createTicket,
+    listSeatByShowtime
 }
