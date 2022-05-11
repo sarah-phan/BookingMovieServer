@@ -7,7 +7,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate({
       CinemaRoom, 
       Ticket,
-      User
+      User,
+      ShowtimeSchedule
     }) {
       this.belongsTo(CinemaRoom, {
         foreignKey: 'roomId'
@@ -19,6 +20,9 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'userId',
         as: 'account'
       })
+      this.belongsTo(ShowtimeSchedule, {
+        foreignKey: 'showtimeId',
+      })
     }
   }
   ListSeat.init({
@@ -28,7 +32,8 @@ module.exports = (sequelize, DataTypes) => {
     price: DataTypes.INTEGER,
     isBooked: DataTypes.BOOLEAN,
     roomId: DataTypes.INTEGER,
-    userId: DataTypes.INTEGER
+    userId: DataTypes.INTEGER,
+    showtimeId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'ListSeat',

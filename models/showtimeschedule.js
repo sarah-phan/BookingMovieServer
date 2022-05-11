@@ -7,7 +7,8 @@ module.exports = (sequelize, DataTypes) => {
     static associate({
       Movie, 
       CinemaRoom, 
-      Ticket
+      Ticket,
+      ListSeat
     }) {
       this.belongsTo(Movie, {
         foreignKey: 'movieId',
@@ -18,6 +19,9 @@ module.exports = (sequelize, DataTypes) => {
         as: 'room'
       })
       this.hasOne(Ticket, {
+        foreignKey: 'showtimeId'
+      })
+      this.hasMany(ListSeat, {
         foreignKey: 'showtimeId'
       })
     }

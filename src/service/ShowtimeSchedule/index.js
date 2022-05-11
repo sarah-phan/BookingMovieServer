@@ -1,12 +1,41 @@
 'use strict'
 
-const { CinemaSystem, Cinema, ShowtimeSchedule, CinemaRoom, Movie } = require('../../../models')
+const { CinemaSystem, Cinema, ShowtimeSchedule, CinemaRoom, Movie, ListSeat } = require('../../../models')
 
 const createShowtime = async (data) => {
+    const { price, roomId } = data
+    const priceVip = parseInt(price) + 20000
     try {
         const showtime = await ShowtimeSchedule.create(data)
+        for (let i = 1; i <= 10; i++) {
+            if (i >= 1 && i <= 7) {
+                await ListSeat.create({
+                    seatName: i,
+                    seatType: "Normal",
+                    orderNumber: i,
+                    price: price,
+                    isBooked: false,
+                    roomId,
+                    userId: null,
+                    showtimeId: showtime.dataValues.id
+                })
+            }
+            if (i > 7 && i <= 10) {
+                await ListSeat.create({
+                    seatName: i,
+                    seatType: "VIP",
+                    orderNumber: i,
+                    price: priceVip,
+                    isBooked: false,
+                    roomId,
+                    userId: null,
+                    showtimeId: showtime.dataValues.id
+                })
+            }
+        }
         return showtime
     } catch (error) {
+        console.log({ error })
         return null
     }
 }
@@ -80,7 +109,7 @@ const getShowtimeBySystem = async (id) => {
     }
 }
 
-const checkShowtimeExisted = async(id) => {
+const checkShowtimeExisted = async (id) => {
     try {
         const showtime = await ShowtimeSchedule.findOne({
             where: {

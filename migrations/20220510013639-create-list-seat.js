@@ -44,6 +44,14 @@ module.exports = {
           key: 'id'
         }
       },
+      showtimeId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'ShowtimeSchedules',
+          key: 'id'
+        }
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
