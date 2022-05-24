@@ -5,7 +5,7 @@
     "database": "booking_movie",
     "host": "127.0.0.1",
     "dialect": "mysql",
-    "dialectOptions": "mysql2"
+    "dialectModule": "mysql2"
   },
   "test": {
     "username": "root",
@@ -20,6 +20,6 @@
     "database": "booking_movie",
     "host": "127.0.0.1",
     "dialect": "mysql",
-    "dialectOptions": "mysql2"
+    "dialectModule": "mysql2"
   }
 }
