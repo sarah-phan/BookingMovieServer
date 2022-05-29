@@ -18,7 +18,7 @@ sequelize
         console.error("Unable to connect to the database:", err);
     });
 
-const port = process.env.port || 3000
-app.listen(port, () => {
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => {
     console.log(`app listening on port ${port}`)
 })
